@@ -1,9 +1,10 @@
 namespace KParkov.Distributions;
 
-public class PermutationCount : IPermutationCount
+public readonly record struct PermutationCount
 {
-    public int Value { get; set; }
-    public int Permutations { get; set; }
-    public int AtLeast { get; set; }
-    public int AtMost { get; set; }
+    public required int Value { get; init; }
+    public required long Permutations { get; init; }
+    public required double Ratio { get; init; }
+    public required long AtLeast { get; init; }
+    public required long AtMost { get; init; }
 }
