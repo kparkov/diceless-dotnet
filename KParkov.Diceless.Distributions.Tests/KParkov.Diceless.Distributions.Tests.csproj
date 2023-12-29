@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\KParkov.Dice\KParkov.Dice.csproj" />
+      <ProjectReference Include="..\KParkov.Diceless.Distributions\KParkov.Diceless.Distributions.csproj" />
     </ItemGroup>
 
 </Project>

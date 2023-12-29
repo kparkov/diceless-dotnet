@@ -1,7 +1,8 @@
 using System.Numerics;
 using FluentAssertions;
+using KParkov.Diceless.Distributions;
 
-namespace KParkov.Distributions.Tests;
+namespace KParkov.Diceless.Distributions.Tests;
 
 using Xunit;
 

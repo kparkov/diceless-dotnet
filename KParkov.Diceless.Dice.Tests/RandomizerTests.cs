@@ -1,10 +1,11 @@
 using FluentAssertions;
+using KParkov.Diceless.Dice;
 
-namespace KParkov.Dice.Tests;
+namespace KParkov.Diceless.Dice.Tests;
 
 public class RandomizerTests
 {
-    private IRandomizer _randomizer;
+    private readonly IRandomizer _randomizer;
 
     public RandomizerTests()
     {
@@ -14,7 +15,7 @@ public class RandomizerTests
     [Fact]
     public void TestRange()
     {
-        var d6 = new DiceFactory(_randomizer).D(6);
+        var d6 = new Dicer(_randomizer).D(6);
 
         var values = Enumerable
             .Range(0, 1000)

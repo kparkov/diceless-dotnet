@@ -1,4 +1,4 @@
-namespace KParkov.Dice;
+namespace KParkov.Diceless.Dice;
 
 public interface IRandomizer
 {

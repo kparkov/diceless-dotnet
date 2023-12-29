@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace KParkov.Distributions;
+namespace KParkov.Diceless.Distributions;
 
 public static class DistributionCalculator
 {

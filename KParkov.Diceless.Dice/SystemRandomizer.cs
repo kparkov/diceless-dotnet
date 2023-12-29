@@ -1,4 +1,4 @@
-namespace KParkov.Dice;
+namespace KParkov.Diceless.Dice;
 
 public sealed class SystemRandomizer : IRandomizer
 {

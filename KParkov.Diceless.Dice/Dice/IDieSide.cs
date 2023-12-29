@@ -1,4 +1,4 @@
-namespace KParkov.Dice.Dice;
+namespace KParkov.Diceless.Dice.Dice;
 
 public interface IDieSide
 {
