@@ -1,3 +1,5 @@
+using FluentAssertions;
+
 namespace KParkov.Distributions.Tests;
 
 using Xunit;
@@ -35,20 +37,41 @@ public class DistributionTests
         Assert.Equal(0.1111111111111111, distribution.PermutationCountsOf(15).Ratio, 15);
     }
 
-    [Fact]
-    public void ProbabilityOfVeryUnlikelyShouldNeverBeRoundedTo100()
+    [Theory()]
+    [InlineData(10)]
+    [InlineData(20)]
+    [InlineData(40)]
+    [InlineData(80)]
+    public void ProbabilityOfVeryUnlikelyShouldNeverBeRoundedTo100(int numDice)
     {
         var sides = new List<int>();
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < numDice; i++)
         {
             sides.Add(6);
         }
+        
+        Func<Distribution> act = () => DistributionCalculator.GenerateDistribution(sides.ToArray(), 0);
 
-        var distribution = DistributionCalculator.GenerateDistribution(sides.ToArray(), 0);
+        act.Should().NotThrow();
+
+        var distribution = act();
 
         PermutationCount countof70 = distribution.PermutationCountsOf(11);
         long atleast = countof70.AtLeast;
-        
-        Assert.True(atleast / (double) distribution.Permutations < 1);
+
+        (atleast / (double)distribution.Permutations)
+            .Should()
+            .BeLessThan(1.0)
+            .And
+            .BeGreaterOrEqualTo(0);
+
+        distribution.PermutationCounts.Should().BeInAscendingOrder(x => x.Value);
+        distribution.PermutationCounts.Should().AllSatisfy(x =>
+        {
+            x.Permutations.Should().BeGreaterOrEqualTo(0);
+            x.Ratio.Should().BeInRange(0, 1);
+            x.AtLeast.Should().BeGreaterOrEqualTo(0);
+            x.AtMost.Should().BeGreaterOrEqualTo(0);
+        });
     }
 }

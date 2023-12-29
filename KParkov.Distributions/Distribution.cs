@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace KParkov.Distributions;
 
 public readonly record struct Distribution
