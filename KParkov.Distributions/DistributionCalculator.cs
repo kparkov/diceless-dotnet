@@ -1,50 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Numerics;
 
 namespace KParkov.Distributions;
 
 public static class DistributionCalculator
 {
-    public static Distribution GenerateDistribution(int[] _sides, int _constant)
+    /// <summary>
+    /// Generate a distribution for a pool of dice going from 1 - (sides), and
+    /// with a constant added.
+    /// </summary>
+    /// <param name="sides">The array of dice sides</param>
+    /// <param name="constant">The constant to add</param>
+    /// <returns>The resulting distribution</returns>
+    public static Distribution GenerateDistribution(int[] sides, int constant)
     {
+        // todo: why do we need the base distribution? Can we drop it?
         var baseDistribution = new List<PermutationCount> { new() { Value = 0, Permutations = 1, Ratio = 0, AtLeast = 1, AtMost = 1 } };
-        long permutations = _sides.Aggregate(1, (p, c) => p * c);
+        BigInteger permutations = sides.Aggregate((BigInteger) 1, (p, c) => p * c);
 
         var cumulativeDistribution = baseDistribution;
 
-        foreach (var sides in _sides)
+        foreach (var s in sides)
         {
             var currentDistribution = new List<PermutationCount>();
 
             var cumulativeMinValue = cumulativeDistribution.Min(c => c.Value);
             var lengthOfCumulative = cumulativeDistribution.Count;
-            long runningOccurrences = 0;
+            BigInteger runningOccurrences = 0;
 
-            for (int i = cumulativeMinValue + 1; i < cumulativeMinValue + lengthOfCumulative + sides; i++)
+            for (int i = cumulativeMinValue + 1; i < cumulativeMinValue + lengthOfCumulative + s; i++)
             {
-                var firstValueFromCumulative = i - sides;
+                var firstValueFromCumulative = i - s;
                 var lastValueFromCumulative = i - 1;
 
                 var sliceOfCumulativeDistribution = cumulativeDistribution.Where(item => item.Value >= firstValueFromCumulative && item.Value <= lastValueFromCumulative).ToList();
-                long sumOfSlice = sliceOfCumulativeDistribution.Sum(x => x.Permutations);
+                var sumOfSlice = sliceOfCumulativeDistribution
+                    .Select(x => x.Permutations)
+                    .Sum();
 
                 currentDistribution.Add(new PermutationCount
                 {
                     Value = i,
                     Permutations = sumOfSlice,
-                    Ratio = sumOfSlice / (double) permutations,
+                    Ratio = (double) sumOfSlice / (double) permutations,
                     AtLeast = permutations - runningOccurrences,
                     AtMost = runningOccurrences + sumOfSlice
                 });
+                
                 runningOccurrences += sumOfSlice;
             }
 
             cumulativeDistribution = currentDistribution;
         }
 
+        // todo: adding the constant after the fact seems unnecessary
+        // todo: OrderBy seems unnecessary
         cumulativeDistribution = cumulativeDistribution
-            .Select(count => count with { Value = count.Value + _constant })
+            .Select(count => count with { Value = count.Value + constant })
             .OrderBy(x => x.Value)
             .ToList();
 

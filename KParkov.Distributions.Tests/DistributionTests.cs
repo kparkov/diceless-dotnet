@@ -1,3 +1,4 @@
+using System.Numerics;
 using FluentAssertions;
 
 namespace KParkov.Distributions.Tests;
@@ -42,6 +43,8 @@ public class DistributionTests
     [InlineData(20)]
     [InlineData(40)]
     [InlineData(80)]
+    [InlineData(160)]
+    [InlineData(320)]
     public void ProbabilityOfVeryUnlikelyShouldNeverBeRoundedTo100(int numDice)
     {
         var sides = new List<int>();
@@ -57,13 +60,11 @@ public class DistributionTests
         var distribution = act();
 
         PermutationCount countof70 = distribution.PermutationCountsOf(11);
-        long atleast = countof70.AtLeast;
-
-        (atleast / (double)distribution.Permutations)
+        BigInteger atleast = countof70.AtLeast;
+        
+        atleast.DivideBy(distribution.Permutations)
             .Should()
-            .BeLessThan(1.0)
-            .And
-            .BeGreaterOrEqualTo(0);
+            .BeInRange(0.0, 1.0);
 
         distribution.PermutationCounts.Should().BeInAscendingOrder(x => x.Value);
         distribution.PermutationCounts.Should().AllSatisfy(x =>
